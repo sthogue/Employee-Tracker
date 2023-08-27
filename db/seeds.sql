@@ -24,7 +24,7 @@ VALUES  (1, "Recruiter", 55000, 1),
         (14, "Director of IT", 80000, 4),
         (15, "Director of HR", 80000, 1),
         (16, "Director of Sales", 75000, 3),
-        (17, "Accountant", 88000, 5)
+        (17, "Accountant", 88000, 5),
         (18, "CEO", 1000000, NULL);
 
 INSERT INTO employee (id, first_name, last_name, role_id, manager_id)
@@ -44,5 +44,5 @@ VALUES (1, "James", "Smith", 1, 15),
        (14, "Anthony", "White", 14, 18),
        (15, "Donald", "Harris", 15, 18),
        (16, "Mark", "Martin", 16, 18),
-       (17, "Paul", "Thompson", 17, 18)
+       (17, "Paul", "Thompson", 17, 18),
        (18, "Steven", "Garcia", 18, NULL);
