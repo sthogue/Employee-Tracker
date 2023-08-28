@@ -8,7 +8,7 @@ require('dotenv').config();
 const db = mysql.createConnection(
   {
     host: '127.0.0.1',
-    // MySQL Username
+    // MySQL Username that are in the .env file
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
@@ -26,13 +26,15 @@ class ViewAll {
   update () {} 
   end () {}
 }
-
+// class to view all departments 
 class ViewDepartments extends ViewAll {
   constructor(options) {
     super(options);
   }
+  // function to view all departments
   view() {
-    db.query('SELECT id AS ID, dept_name AS Department FROM department;', function (err, results) {
+    const sql = `SELECT id AS ID, dept_name AS Department FROM department;`;
+    db.query(sql, function (err, results) {
       if (err) {
         console.log(err);
       }
@@ -42,12 +44,15 @@ class ViewDepartments extends ViewAll {
   }
 }
 
+// class to view all roles
 class ViewRoles extends ViewAll {
   constructor(options) {
     super(options);
   }
+  // function to view all roles
   view() {
-    db.query('SELECT roles.id AS ID, roles.title AS Title , department.dept_name AS Department, roles.salary AS Salary FROM roles LEFT JOIN department ON department_id=department.id', function (err, results) {
+    const sql ='SELECT roles.id AS ID, roles.title AS Title , department.dept_name AS Department, roles.salary AS Salary FROM roles LEFT JOIN department ON department_id=department.id';
+    db.query(sql , function (err, results) {
       if (err) {
         console.log(err);
       }
@@ -57,12 +62,16 @@ class ViewRoles extends ViewAll {
   }
 }
 
+// class to view all employees
 class ViewEmployees extends ViewAll {
   constructor(options) {
     super(options);
   }
+  // function to view all employees
   view() {
-    db.query('SELECT employee.id AS ID, employee.first_name AS First, employee.last_name AS Last, roles.title AS Title, roles.salary AS Salary, department.dept_name AS Department, employee.manager_id WHERE employee.manager_id = employee.id FROM employee LEFT JOIN roles AS roles ON role_id=roles.id LEFT JOIN department AS department ON department_id=department.id' , function (err, results) {
+    const sql = 'SELECT employee.id AS ID, employee.first_name AS First, employee.last_name AS Last, roles.title AS Title, roles.salary AS Salary, department.dept_name AS Department, CONCAT(Managers.first_name," ", managers.last_name) AS Managers FROM employee LEFT JOIN roles AS roles ON role_id=roles.id LEFT JOIN department AS department ON department_id=department.id LEFT JOIN employee AS Managers ON Managers.id=employee.manager_id '; 
+    // query function to view all employees
+    db.query(sql , function (err, results) {
       if (err) {
         console.log(err);
       }
@@ -72,16 +81,20 @@ class ViewEmployees extends ViewAll {
   }
 }
 
+// class to add a department
 class addDepartment extends ViewAll {
   constructor(options) {
     super(options);
   }
+  // function to add a department
   add() {
+    // will first prompt what is the name of the department you would like to add
     inquirer.prompt([
       {
         type: 'input',
         name: 'department',
         message: 'What is the name of the department you would like to add?',
+        // this makes sure that the user enters a valid department name essentially make sure its not null
         validate: (department) => {
           if (department) {
             return true;
@@ -92,6 +105,7 @@ class addDepartment extends ViewAll {
         },
       },
     ]).then((response) => {
+      // then take the reponse and insert it into the department table
       db.query(`INSERT INTO department (dept_name) VALUES ('${response.department}')`, function (err, results) {
         if (err) {
           console.log(err);
@@ -102,22 +116,25 @@ class addDepartment extends ViewAll {
     });
   }
 }
-
+// class to add role 
 class addRole extends ViewAll {
   constructor(options) {
     super(options);
   }
-
+  // add role function
   add() {
+    // first query the database to get the department list
     db.query('SELECT * FROM department', (err, results) => {
       if (err) {
         console.log(err);
         throw err;
       }
+      // this will grab the department by name but it will return the id when injecting into the database
       const departmentList = results.map((department) => ({
           name: department.dept_name,
           value: department.id,
       }));
+      // inquirer prompt to ask what is the name of the role you would like to add, salary, and department
         inquirer.prompt([
           {
             type: 'input',
@@ -155,6 +172,7 @@ class addRole extends ViewAll {
         ])
         
         .then((response) => {
+          // this query will insert the response into the roles table
           db.query(`INSERT INTO roles (title, salary, department_id) VALUES ('${response.title}', '${response.salary}', '${response.department_id}')`, function (err, results) {
             if (err) {
               console.log(err);
@@ -167,17 +185,19 @@ class addRole extends ViewAll {
     }
   }
 
-
+// add employee class
 class addEmployee extends ViewAll{
   constructor(options) {
     super(options);
   }
+  // add employee function
     add() {
       db.query('SELECT * FROM roles', (err, results) => {
         if (err) {
           console.log(err);
           throw err;
         }
+        // this will grab all the roles by title to display but will return the id when injecting into the database
         const roleList = results.map((role) => ({
             name: role.title,
             value: role.id,
@@ -187,6 +207,7 @@ class addEmployee extends ViewAll{
               console.log(err);
               throw err;
             }
+            // managerList will grab all employees first and last and will show first and last name but will return just their id when injecting into the database
             const managerList = results.map((employee) => ({
                 name: employee.first_name + " " + employee.last_name,
                 value: employee.id,
@@ -250,20 +271,24 @@ class updateEmployeeRole extends ViewAll {
     super(options);
   }
   update() {
+    // query to get all employees
     db.query('SELECT * FROM employee', (err, results) => {
       if (err) {
         console.log(err);
         throw err;
       }
+      // this is to get the employees by first and last name but will return the id when injecting into the database
       const employeeList = results.map((employee) => ({
           name: employee.first_name + " " + employee.last_name,
           value: employee.id,
       }));
+      // query to get all roles
         db.query('SELECT * FROM roles', (err, results) => {
           if (err) {
             console.log(err);
             throw err;
           }
+          // roleList will grab all roles by title and display the title only but will return the id when injecting into the database
           const roleList = results.map((role) => ({
               name: role.title,
               value: role.id,
@@ -296,6 +321,7 @@ class updateEmployeeRole extends ViewAll {
   }
 }
 
+// Class and function to end the application
 class endApplication extends ViewAll {
   constructor(options) {
     super(options);
@@ -307,6 +333,7 @@ class endApplication extends ViewAll {
   }
 }
 
+// exports all the classes and functions
 module.exports = {
   ViewAll,
   ViewDepartments,
