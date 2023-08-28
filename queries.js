@@ -111,6 +111,19 @@ class addRole extends ViewAll {
   // need to add department list to choices
 
   add() {
+    db.query('SELECT * FROM department', function (err, results) {
+      if (err) {
+        console.log(err);
+        throw err;
+      }
+      const departmentList = results.map((department) => {
+        return {
+          name: department.dept_name,
+          value: department.id,
+        };
+      });
+    });
+
     inquirer.prompt([
       {
         type: 'input',
@@ -142,7 +155,7 @@ class addRole extends ViewAll {
         type: 'list',
         name: 'department_id',
         message: 'Choose the corresponding department ID for this role:',
-        choices: departmentlist
+        choices: departmentList
         },
      ])
     .then((response) => {
