@@ -1,6 +1,8 @@
+// calls on the inquirer package and the queries.js file
 const inquirer = require("inquirer");
 const queries = require("./queries");
 
+// options for user to do in the app
 const options = [
   {
       type: "list",
@@ -17,8 +19,10 @@ const options = [
         "End Application" ]
   }];
 
+  // starts the application and prompts the user with the options
 const start = () => {
   inquirer.prompt(options).then((response) => {
+    // switch statement to handle the different options and call on the appropriate class and function
     switch (response.option) {
       case "View All Departments":
         const viewDepartments = new queries.ViewDepartments();
@@ -57,7 +61,6 @@ const start = () => {
 };
 
 start();
-// function to start the app
-// include a switch statement to handle the different options
 
+//exports the start function out to the server.js file to the query.js file to be used after the user has completed the action they originally selected
 exports.start = start;

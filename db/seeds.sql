@@ -1,3 +1,4 @@
+-- inserts data into department 
 INSERT INTO department (id, dept_name)
 VALUES (1, "Human Resources"),
        (2, "Marketing"),
@@ -7,6 +8,7 @@ VALUES (1, "Human Resources"),
        (6, "Legal");
 
 
+-- inserts data into roles
 INSERT INTO roles (id, title, salary, department_id)
 VALUES  (1, "Recruiter", 55000, 1),
         (2, "Human Resource Manager", 60000, 1),
@@ -27,6 +29,7 @@ VALUES  (1, "Recruiter", 55000, 1),
         (17, "Accountant", 88000, 5),
         (18, "CEO", 1000000, NULL);
 
+-- inserts employee data
 INSERT INTO employee (id, first_name, last_name, role_id, manager_id)
 VALUES (1, "James", "Smith", 1, 15),
        (2, "John", "Johnson", 2, 15),
