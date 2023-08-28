@@ -62,7 +62,7 @@ class ViewEmployees extends ViewAll {
     super(options);
   }
   view() {
-    db.query('SELECT employee.id AS ID, employee.first_name AS First, employee.last_name AS Last, roles.title AS Title, roles.salary AS Salary, department.dept_name AS Department, employee.manager_id FROM employee LEFT JOIN roles AS roles ON role_id=roles.id LEFT JOIN department AS department ON department_id=department.id' , function (err, results) {
+    db.query('SELECT employee.id AS ID, employee.first_name AS First, employee.last_name AS Last, roles.title AS Title, roles.salary AS Salary, department.dept_name AS Department, employee.manager_id WHERE employee.manager_id = employee.id FROM employee LEFT JOIN roles AS roles ON role_id=roles.id LEFT JOIN department AS department ON department_id=department.id' , function (err, results) {
       if (err) {
         console.log(err);
       }
